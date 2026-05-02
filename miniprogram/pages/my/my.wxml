@@ -1,0 +1,84 @@
+﻿<view class="container">
+  <!-- 用户信息 -->
+  <view class="user-card" wx:if="{{userInfo}}">
+    <image class="avatar" src="{{userInfo.avatarUrl || ''}}" mode="aspectFill"/>
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>
+    </view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tabs">
+    <view class="tab-item {{activeTab === 'items' ? 'active' : ''}}" data-tab="items" bindtap="switchTab">
+      我的发布
+    </view>
+    <view class="tab-item {{activeTab === 'claims' ? 'active' : ''}}" data-tab="claims" bindtap="switchTab">
+      我的认领
+    </view>
+    <view class="tab-item {{activeTab === 'received' ? 'active' : ''}}" data-tab="received" bindtap="switchTab">
+      收到的认领
+    </view>
+    <view class="tab-item {{activeTab === 'collections' ? 'active' : ''}}" data-tab="collections" bindtap="switchTab">
+      我的收藏
+    </view>
+  </view>
+
+  <!-- 我的发布 -->
+  <view wx:if="{{activeTab === 'items'}}">
+    <view class="card" wx:for="{{myItems}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="item-header">
+        <text class="item-title">{{item.title}}</text>
+        <text class="tag tag-gray">{{item.status === 0 ? '待认领' : (item.status === 1 ? '已认领' : '已失效')}}</text>
+      </view>
+      <view class="item-desc" wx:if="{{item.description}}">{{item.description}}</view>
+      <view class="item-actions">
+        <text class="action-btn" data-id="{{item.id}}" catchtap="revokeItem" wx:if="{{item.status === 0}}">撤销</text>
+        <text class="action-btn danger" data-id="{{item.id}}" catchtap="deleteItem">删除</text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{myItems.length === 0}}">暂无发布</view>
+  </view>
+
+  <!-- 我的认领 -->
+  <view wx:if="{{activeTab === 'claims'}}">
+    <view class="card" wx:for="{{myClaims}}" wx:key="id" data-id="{{item.itemId}}" bindtap="goDetail">
+      <view class="item-header">
+        <text class="item-title">{{item.itemTitle}}</text>
+        <text class="tag {{item.status === 1 ? 'tag-green' : (item.status === 2 ? 'tag-gray' : 'tag-blue')}}">
+          {{item.status === 0 ? '待确认' : (item.status === 1 ? '已确认' : '已拒绝')}}
+        </text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{myClaims.length === 0}}">暂无认领记录</view>
+  </view>
+
+  <!-- 收到的认领 -->
+  <view wx:if="{{activeTab === 'received'}}">
+    <view class="card" wx:for="{{receivedClaims}}" wx:key="id" data-id="{{item.itemId}}" bindtap="goDetail">
+      <view class="item-header">
+        <text class="item-title">{{item.itemTitle}}</text>
+        <text class="tag {{item.status === 1 ? 'tag-green' : (item.status === 2 ? 'tag-gray' : 'tag-blue')}}">
+          {{item.status === 0 ? '待确认' : (item.status === 1 ? '已确认' : '已拒绝')}}
+        </text>
+      </view>
+      <view class="item-desc" wx:if="{{item.description}}">{{item.description}}</view>
+      <view class="item-actions" wx:if="{{item.status === 0}}">
+        <text class="action-btn" data-id="{{item.id}}" catchtap="confirmClaim">确认认领</text>
+        <text class="action-btn danger" data-id="{{item.id}}" catchtap="rejectClaim">拒绝</text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{receivedClaims.length === 0}}">暂无收到的认领</view>
+  </view>
+
+  <!-- 我的收藏 -->
+  <view wx:if="{{activeTab === 'collections'}}">
+    <view class="card" wx:for="{{myCollections}}" wx:key="id" data-id="{{item.itemId}}" bindtap="goDetail">
+      <view class="item-header">
+        <text class="item-title">{{item.itemTitle}}</text>
+        <text class="tag tag-gray">{{item.itemStatus === 0 ? '待认领' : (item.itemStatus === 1 ? '已认领' : '已失效')}}</text>
+      </view>
+      <view class="item-desc">类型：{{item.itemType === 1 ? '失物招领' : '寻物启事'}}</view>
+    </view>
+    <view class="empty" wx:if="{{myCollections.length === 0}}">暂无收藏记录</view>
+  </view>
+</view>

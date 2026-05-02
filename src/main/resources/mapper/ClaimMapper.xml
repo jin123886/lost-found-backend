@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lost_found_backend.mapper.ClaimMapper">
+
+    <resultMap id="claimMap" type="com.example.lost_found_backend.entity.Claim">
+        <id column="id" property="id"/>
+        <result column="item_id" property="itemId"/>
+        <result column="claimant_openid" property="claimantOpenid"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <!-- 关联字段 -->
+        <result column="item_title" property="itemTitle"/>
+        <result column="item_type" property="itemType"/>
+        <result column="publisher_openid" property="publisherOpenid"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `claim` (item_id, claimant_openid, description, status, create_time, update_time)
+        VALUES (#{itemId}, #{claimantOpenid}, #{description}, #{status}, NOW(), NOW())
+    </insert>
+
+    <select id="findById" resultMap="claimMap">
+        SELECT c.*, i.title AS item_title, i.type AS item_type, i.publisher_openid
+        FROM `claim` c
+        LEFT JOIN `item` i ON c.item_id = i.id
+        WHERE c.id = #{id}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE `claim` SET status = #{status}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="findByClaimant" resultMap="claimMap">
+        SELECT c.*, i.title AS item_title, i.type AS item_type, i.publisher_openid
+        FROM `claim` c
+        LEFT JOIN `item` i ON c.item_id = i.id
+        WHERE c.claimant_openid = #{claimantOpenid}
+        ORDER BY c.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="findByPublisher" resultMap="claimMap">
+        SELECT c.*, i.title AS item_title, i.type AS item_type, i.publisher_openid
+        FROM `claim` c
+        LEFT JOIN `item` i ON c.item_id = i.id
+        WHERE i.publisher_openid = #{publisherOpenid}
+        ORDER BY c.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countByClaimant" resultType="long">
+        SELECT COUNT(*)
+        FROM `claim`
+        WHERE claimant_openid = #{claimantOpenid}
+    </select>
+
+    <select id="countByPublisher" resultType="long">
+        SELECT COUNT(*)
+        FROM `claim` c
+        LEFT JOIN `item` i ON c.item_id = i.id
+        WHERE i.publisher_openid = #{publisherOpenid}
+    </select>
+
+    <update id="rejectPendingByItemId">
+        UPDATE `claim`
+        SET status = 2, update_time = NOW()
+        WHERE item_id = #{itemId}
+          AND status = 0
+          AND id != #{excludeId}
+    </update>
+
+    <select id="countByItemAndClaimant" resultType="int">
+        SELECT COUNT(*) FROM `claim`
+        WHERE item_id = #{itemId} AND claimant_openid = #{claimantOpenid}
+    </select>
+
+</mapper>

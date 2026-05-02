@@ -1,0 +1,8 @@
+<view class="login-page">
+  <view class="logo-area">
+    <view class="logo">🔍</view>
+    <view class="title">校园失物招领</view>
+    <view class="subtitle">发布 · 寻找 · 认领</view>
+  </view>
+  <button class="login-btn" bindtap="handleLogin">微信一键登录</button>
+</view>

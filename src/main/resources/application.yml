@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/lost_and_found?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: mysql123
+
+# MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.lost_found_backend.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 服务器端口
+server:
+  port: 8080
+
+# 文件上传配置
+spring.servlet.multipart:
+  max-file-size: 10MB
+  max-request-size: 10MB
+
+# JWT 配置
+jwt:
+  # 密钥（生产环境请改为复杂随机字符串）
+  secret: lost-found-campus-2026-secret-key-min-32-chars!!
+  # Token 有效期（毫秒），默认 7 天
+  expire-ms: 604800000
+
+# 微信小程序配置（需替换为你自己的 AppID 和 AppSecret）
+wechat:
+  appid: your-appid-here
+  secret: your-secret-here

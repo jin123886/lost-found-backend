@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lost_found_backend.mapper.ItemMapper">
+
+    <resultMap id="itemMap" type="com.example.lost_found_backend.entity.Item">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="category" property="category"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="collection_count" property="collectionCount"/>
+        <result column="location" property="location"/>
+        <result column="lost_time" property="lostTime"/>
+        <result column="image_urls" property="imageUrls"/>
+        <result column="contact_info" property="contactInfo"/>
+        <result column="publisher_openid" property="publisherOpenid"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `item` (title, description, category, type, status, view_count, comment_count, collection_count, location, lost_time,
+                            image_urls, contact_info, publisher_openid, create_time, update_time)
+        VALUES (#{title}, #{description}, #{category}, #{type}, #{status}, 0, 0, 0, #{location}, #{lostTime},
+                #{imageUrls}, #{contactInfo}, #{publisherOpenid}, NOW(), NOW())
+    </insert>
+
+    <select id="findById" resultMap="itemMap">
+        SELECT * FROM `item` WHERE id = #{id}
+    </select>
+
+    <update id="updateById">
+        UPDATE `item`
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="lostTime != null">lost_time = #{lostTime},</if>
+            <if test="imageUrls != null">image_urls = #{imageUrls},</if>
+            <if test="contactInfo != null">contact_info = #{contactInfo},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM `item` WHERE id = #{id}
+    </delete>
+
+    <!-- 列表查询（支持筛选/搜索/排序/分页） -->
+    <select id="list" resultMap="itemMap">
+        SELECT * FROM `item`
+        <where>
+            <if test="type != null">AND type = #{type}</if>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="category != null and category != ''">AND category = #{category}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%')
+                     OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="sort != null and sort != '' and order != null and order != ''">
+                ORDER BY ${sort} ${order}
+            </when>
+            <otherwise>
+                ORDER BY create_time DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*) FROM `item`
+        <where>
+            <if test="type != null">AND type = #{type}</if>
+            <if test="status != null">AND status = #{status}</if>
+            <if test="category != null and category != ''">AND category = #{category}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%')
+                     OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="findByPublisher" resultMap="itemMap">
+        SELECT * FROM `item`
+        WHERE publisher_openid = #{publisherOpenid}
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countByPublisher" resultType="long">
+        SELECT COUNT(*) FROM `item`
+        WHERE publisher_openid = #{publisherOpenid}
+    </select>
+
+    <update id="incrementViewCount">
+        UPDATE `item` SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="incrementCommentCount">
+        UPDATE `item` SET comment_count = comment_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="decrementCommentCount">
+        UPDATE `item` SET comment_count = GREATEST(comment_count - 1, 0) WHERE id = #{id}
+    </update>
+
+    <update id="incrementCollectionCount">
+        UPDATE `item` SET collection_count = collection_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="decrementCollectionCount">
+        UPDATE `item` SET collection_count = GREATEST(collection_count - 1, 0) WHERE id = #{id}
+    </update>
+
+</mapper>

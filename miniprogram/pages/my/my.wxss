@@ -1,0 +1,13 @@
+.user-card { display: flex; align-items: center; background: linear-gradient(135deg, #4A90D9, #357ABD); border-radius: 16rpx; padding: 30rpx; margin-bottom: 24rpx; }
+.avatar { width: 80rpx; height: 80rpx; border-radius: 50%; background: #fff; }
+.user-info { margin-left: 20rpx; }
+.nickname { color: #fff; font-size: 32rpx; font-weight: bold; }
+.tabs { display: flex; background: #fff; border-radius: 12rpx; margin-bottom: 20rpx; overflow: hidden; flex-wrap: wrap; }
+.tab-item { flex: 1; min-width: 25%; text-align: center; padding: 20rpx 0; font-size: 26rpx; color: #666; }
+.tab-item.active { color: #4A90D9; font-weight: bold; border-bottom: 4rpx solid #4A90D9; }
+.item-header { display: flex; justify-content: space-between; align-items: center; gap: 16rpx; }
+.item-title { flex: 1; font-size: 30rpx; font-weight: bold; }
+.item-desc { margin-top: 12rpx; font-size: 26rpx; color: #666; }
+.item-actions { text-align: right; margin-top: 12rpx; }
+.action-btn { color: #4A90D9; font-size: 26rpx; margin-left: 24rpx; padding: 8rpx 16rpx; border-radius: 8rpx; border: 1rpx solid #4A90D9; }
+.action-btn.danger { color: #E74C3C; border-color: #E74C3C; }

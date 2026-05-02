@@ -1,0 +1,48 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索物品名称..." value="{{keyword}}"
+           bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch"/>
+  </view>
+
+  <!-- 类型切换 -->
+  <scroll-view class="tab-scroll" scroll-x>
+    <view class="tab-item {{type === item.value ? 'active' : ''}}"
+          wx:for="{{typeTabs}}" wx:key="value"
+          data-type="{{item.value}}" bindtap="onSwitchType">
+      {{item.label}}
+    </view>
+  </scroll-view>
+
+  <!-- 物品列表 -->
+  <view class="item-list">
+    <view class="card" wx:for="{{list}}" wx:key="id"
+          data-id="{{item.id}}" bindtap="goDetail">
+      <view class="item-header">
+        <text class="item-title">{{item.title}}</text>
+        <text class="tag {{item.type === 1 ? 'tag-blue' : 'tag-green'}}">
+          {{item.type === 1 ? '失物招领' : '寻物启事'}}
+        </text>
+      </view>
+      <view class="item-desc">{{item.description || '暂无描述'}}</view>
+      <view class="item-footer">
+        <text class="item-location" wx:if="{{item.location}}">📍 {{item.location}}</text>
+        <text class="item-time">{{item.createTime}}</text>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{list.length > 0}}">
+      <text wx:if="{{loading}}">加载中...</text>
+      <text wx:elif="{{noMore}}">— 没有更多了 —</text>
+      <text wx:else bindtap="onLoadMore">点击加载更多</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{!loading && list.length === 0}}">
+      <text class="empty-icon">📭</text>
+      <text>暂无物品信息</text>
+      <text class="empty-tip">快去发布第一条吧！</text>
+    </view>
+  </view>
+</view>

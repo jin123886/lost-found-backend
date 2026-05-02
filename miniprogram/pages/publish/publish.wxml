@@ -1,0 +1,56 @@
+<view class="container">
+  <!-- 类型选择 -->
+  <view class="type-selector">
+    <view class="type-option {{type === 1 ? 'active' : ''}}" data-type="1" bindtap="onTypeChange">
+      <text>🎒 失物招领</text>
+      <text class="type-desc">捡到了别人的东西</text>
+    </view>
+    <view class="type-option {{type === 2 ? 'active' : ''}}" data-type="2" bindtap="onTypeChange">
+      <text>🔍 寻物启事</text>
+      <text class="type-desc">自己的东西丢了</text>
+    </view>
+  </view>
+
+  <!-- 表单 -->
+  <view class="form">
+    <input class="form-input" placeholder="物品名称 *" value="{{title}}" bindinput="onTitleInput"/>
+
+    <textarea class="form-textarea" placeholder="详细描述（颜色、特征、丢失/捡到经过等）"
+              value="{{description}}" bindinput="onDescriptionInput"/>
+
+    <view class="form-row">
+      <label>分类</label>
+      <picker mode="selector" range="{{categories}}" bindchange="onCategoryChange">
+        <view class="picker-val">{{category || '请选择'}}</view>
+      </picker>
+    </view>
+
+    <input class="form-input" placeholder="地点（如图书馆、食堂）" value="{{location}}" bindinput="onLocationInput"/>
+
+    <view class="form-row">
+      <label>时间</label>
+      <picker mode="date" bindchange="onDateChange">
+        <view class="picker-val">{{lostTime || '请选择'}}</view>
+      </picker>
+    </view>
+
+    <input class="form-input" placeholder="联系方式（手机/微信）" value="{{contactInfo}}" bindinput="onContactInput"/>
+
+    <!-- 图片上传 -->
+    <view class="image-upload">
+      <view class="image-item" wx:for="{{images}}" wx:key="*this">
+        <image src="{{baseUrl + item}}" mode="aspectFill"/>
+        <view class="remove-btn" data-idx="{{index}}" bindtap="removeImage">✕</view>
+      </view>
+      <view class="image-add" wx:if="{{images.length < 3}}" bindtap="chooseImage">
+        <text>＋</text>
+        <text>上传图片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交 -->
+  <button class="btn-primary submit-btn" bindtap="submit" disabled="{{submitting}}" loading="{{submitting}}">
+    {{submitting ? '发布中...' : '立即发布'}}
+  </button>
+</view>

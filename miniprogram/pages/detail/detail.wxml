@@ -1,0 +1,89 @@
+<view class="container" wx:if="{{item}}">
+  <!-- 图片 -->
+  <swiper class="detail-swiper" wx:if="{{images.length > 0}}" indicator-dots="{{images.length > 1}}" autoplay="{{false}}">
+    <swiper-item wx:for="{{images}}" wx:key="*this">
+      <image class="detail-image" src="{{baseUrl + item}}" mode="aspectFill"/>
+    </swiper-item>
+  </swiper>
+
+  <!-- 标题行 -->
+  <view class="card">
+    <view class="title-row">
+      <text class="detail-title">{{item.title}}</text>
+      <text class="tag {{item.type === 1 ? 'tag-blue' : 'tag-green'}}">
+        {{item.type === 1 ? '失物招领' : '寻物启事'}}
+      </text>
+    </view>
+    <text class="tag tag-gray" style="margin-top:12rpx">
+      {{item.status === 0 ? '待认领' : (item.status === 1 ? '已认领' : '已失效')}}
+    </text>
+    <view class="stats-row">
+      <text>浏览 {{item.viewCount || 0}}</text>
+      <text>评论 {{item.commentCount || 0}}</text>
+      <text>收藏 {{item.collectionCount || 0}}</text>
+    </view>
+  </view>
+
+  <!-- 详细信息 -->
+  <view class="card">
+    <view class="info-row"><text class="label">分类</text><text>{{item.category || '未分类'}}</text></view>
+    <view class="info-row"><text class="label">地点</text><text>{{item.location || '未知'}}</text></view>
+    <view class="info-row"><text class="label">时间</text><text>{{item.lostTime || '未知'}}</text></view>
+    <view class="info-row"><text class="label">联系方式</text><text>{{item.contactInfo || '未填写'}}</text></view>
+  </view>
+
+  <!-- 描述 -->
+  <view class="card" wx:if="{{item.description}}">
+    <view class="label">详细描述</view>
+    <view class="desc-text">{{item.description}}</view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-row">
+    <button class="btn-secondary" bindtap="toggleCollection">
+      {{collected ? '取消收藏' : '收藏物品'}}
+    </button>
+    <button class="btn-primary" wx:if="{{item.status === 0 && item.publisherOpenid !== currentUserOpenid}}"
+            bindtap="showClaim">我要认领</button>
+  </view>
+
+  <!-- 评论 -->
+  <view class="card">
+    <view class="section-title">评论区</view>
+    <textarea class="comment-input" placeholder="写下你的评论..."
+              value="{{commentContent}}" bindinput="onCommentInput"/>
+    <button class="btn-primary comment-btn" bindtap="submitComment" loading="{{commentSubmitting}}" disabled="{{commentSubmitting}}">
+      发表评论
+    </button>
+
+    <view class="comment-list" wx:if="{{comments.length > 0}}">
+      <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+        <view class="comment-header">
+          <view class="comment-user">
+            <image class="comment-avatar" src="{{item.authorAvatarUrl || ''}}" mode="aspectFill"/>
+            <view>
+              <view class="comment-name">{{item.authorNickname || '微信用户'}}</view>
+              <view class="comment-time">{{item.createTime}}</view>
+            </view>
+          </view>
+          <text class="comment-delete" wx:if="{{item.authorOpenid === currentUserOpenid}}" data-id="{{item.id}}" bindtap="deleteComment">删除</text>
+        </view>
+        <view class="comment-content">{{item.content}}</view>
+      </view>
+    </view>
+    <view class="empty-comment" wx:elif="{{commentsLoading}}">评论加载中...</view>
+    <view class="empty-comment" wx:else>暂无评论，来抢沙发吧</view>
+  </view>
+
+  <!-- 认领表单弹窗 -->
+  <view class="mask" wx:if="{{showClaimForm}}" catchtap="hideClaim"></view>
+  <view class="claim-modal" wx:if="{{showClaimForm}}">
+    <view class="modal-title">提交认领申请</view>
+    <textarea class="modal-textarea" placeholder="请描述能证明物品属于你的特征（如颜色、型号、特殊标记等）"
+              value="{{claimDesc}}" bindinput="onClaimDescInput"/>
+    <view class="modal-btns">
+      <button class="btn-cancel" bindtap="hideClaim">取消</button>
+      <button class="btn-submit" bindtap="submitClaim" loading="{{submitting}}">提交</button>
+    </view>
+  </view>
+</view>

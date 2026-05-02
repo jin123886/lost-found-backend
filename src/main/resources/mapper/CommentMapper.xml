@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.lost_found_backend.mapper.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.lost_found_backend.entity.Comment">
+        <id column="id" property="id"/>
+        <result column="item_id" property="itemId"/>
+        <result column="author_openid" property="authorOpenid"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="author_nickname" property="authorNickname"/>
+        <result column="author_avatar_url" property="authorAvatarUrl"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        c.id, c.item_id, c.author_openid, c.content, c.create_time, c.update_time,
+        u.nickname AS author_nickname, u.avatar_url AS author_avatar_url
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comment (item_id, author_openid, content)
+        VALUES (#{itemId}, #{authorOpenid}, #{content})
+    </insert>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM comment c
+        LEFT JOIN user u ON c.author_openid = u.openid
+        WHERE c.id = #{id}
+    </select>
+
+    <select id="findByItemId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM comment c
+        LEFT JOIN user u ON c.author_openid = u.openid
+        WHERE c.item_id = #{itemId}
+        ORDER BY c.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countByItemId" resultType="long">
+        SELECT COUNT(*)
+        FROM comment
+        WHERE item_id = #{itemId}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM comment WHERE id = #{id}
+    </delete>
+
+</mapper>
